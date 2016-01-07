@@ -25,7 +25,8 @@
     MSPopGestureViewController * pop =[[MSPopGestureViewController alloc]init];
     //关闭滑动返回
 //    pop.popDisabled = YES;
-    pop.ms_navigationBarVisibled = YES;
+    //隐藏导航栏
+//    pop.ms_navigationBarHidden = YES;
     [self.navigationController pushViewController:pop animated:YES];
 }
 - (void)didReceiveMemoryWarning {

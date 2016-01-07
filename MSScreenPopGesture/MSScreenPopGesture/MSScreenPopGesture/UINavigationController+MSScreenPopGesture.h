@@ -17,6 +17,6 @@
 @interface UIViewController(MSScreenPopGesture)
  /** 禁用滑动返回*/
 @property (nonatomic, assign) BOOL ms_interactivePopDisabled;
- /** 隐藏导航栏*/
-@property (nonatomic, assign) BOOL ms_navigationBarVisibled;
+ /** 隐藏导航栏 YES隐藏*/
+@property (nonatomic, assign) BOOL ms_navigationBarHidden;
 @end

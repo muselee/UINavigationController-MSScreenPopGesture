@@ -71,13 +71,13 @@ void (^method_swizzling)(Class , SEL , SEL ) = ^(Class class, SEL originalMethod
 - (void)ms_pushViewController:(UIViewController *)viewController animated:(BOOL)animated {
 
     [self ms_pushViewController:viewController animated:animated];
-    [self setNavigationBarHidden:viewController.ms_navigationBarVisibled animated:animated];
+    [self setNavigationBarHidden:viewController.ms_navigationBarHidden animated:animated];
 
 }
 -(UIViewController *)ms_popViewControllerAnimated:(BOOL)animated {
     UIViewController *viewController = [self ms_popViewControllerAnimated:animated];
     UIViewController *visibleViewController = [self visibleViewController];
-    [self setNavigationBarHidden:visibleViewController.ms_navigationBarVisibled animated:animated];
+    [self setNavigationBarHidden:visibleViewController.ms_navigationBarHidden animated:animated];
     return viewController;
 }
 #pragma mark set get
@@ -110,11 +110,11 @@ void (^method_swizzling)(Class , SEL , SEL ) = ^(Class class, SEL originalMethod
 {
     objc_setAssociatedObject(self, @selector(ms_interactivePopDisabled), @(disabled), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
-- (void)setMs_navigationBarVisibled:(BOOL)ms_navigationBarVisibled {
-    objc_setAssociatedObject(self, @selector(ms_navigationBarVisibled), @(ms_navigationBarVisibled), OBJC_ASSOCIATION_ASSIGN);
+- (void)setMs_navigationBarHidden:(BOOL)ms_navigationBarHidden {
+    objc_setAssociatedObject(self, @selector(ms_navigationBarHidden), @(ms_navigationBarHidden), OBJC_ASSOCIATION_ASSIGN);
 }
 
-- (BOOL)ms_navigationBarVisibled {
+- (BOOL)ms_navigationBarHidden {
     return [objc_getAssociatedObject(self, _cmd) boolValue];
 }
 @end
