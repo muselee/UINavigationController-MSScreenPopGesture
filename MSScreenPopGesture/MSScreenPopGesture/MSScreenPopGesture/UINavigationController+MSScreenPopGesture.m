@@ -9,7 +9,7 @@
 #import "UINavigationController+MSScreenPopGesture.h"
 #import <objc/runtime.h>
 @interface UINavigationController(_MSScreenPopGesture)
-@property (nonatomic, assign) BOOL ms_navigationBarHidden;
+
 @end
 @implementation UINavigationController (MSScreenPopGesture)
 
@@ -95,12 +95,7 @@ void (^method_swizzling)(Class , SEL , SEL ) = ^(Class class, SEL originalMethod
         object_setClass(self.interactivePopGestureRecognizer, [UIScreenEdgePanGestureRecognizer class]);
     }
 }
-- (BOOL)ms_navigationBarHidden {
-    return [objc_getAssociatedObject(self, _cmd) boolValue];
-}
-- (void)setMs_navigationBarHidden:(BOOL)ms_navigationBarHidden{
-     objc_setAssociatedObject(self, @selector(ms_navigationBarHidden), @(ms_navigationBarHidden), OBJC_ASSOCIATION_ASSIGN);
-}
+
 @end
 
 
