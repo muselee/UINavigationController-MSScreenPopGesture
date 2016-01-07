@@ -9,10 +9,15 @@
 #import "UINavigationController+MSScreenPopGesture.h"
 #import <objc/runtime.h>
 @interface UINavigationController(_MSScreenPopGesture)
-
+@property (nonatomic, assign) BOOL ms_navigationBarHidden;
 @end
 @implementation UINavigationController (MSScreenPopGesture)
 
+void (^method_swizzling)(Class , SEL , SEL ) = ^(Class class, SEL originalMethod, SEL swizzledMethod){
+    Method  method = class_getInstanceMethod(class, originalMethod);
+    Method _method = class_getInstanceMethod(class, swizzledMethod);
+    method_exchangeImplementations(method, _method);
+};
 + (void)load {
     
     static dispatch_once_t onceToken;
@@ -21,6 +26,11 @@
         [UINavigationController gestureRecognizerShouldBegin];
         [UINavigationController gestureRecognizerShouldReceiveTouch];
         [UINavigationController gestureRecognizerShouldBeRequiredToFailByGestureRecognizer];
+        //交换push 和pop 方法
+        method_swizzling(self,@selector(pushViewController:animated:),@selector(ms_pushViewController:animated:));
+        //
+        method_swizzling(self,@selector(popViewControllerAnimated:),@selector(ms_popViewControllerAnimated:));
+        
     });
 }
 
@@ -56,6 +66,20 @@
         return NO;
     }));
 }
+
+#pragma mark private funcs
+- (void)ms_pushViewController:(UIViewController *)viewController animated:(BOOL)animated {
+
+    [self ms_pushViewController:viewController animated:animated];
+    [self setNavigationBarHidden:viewController.ms_navigationBarVisibled animated:animated];
+
+}
+-(UIViewController *)ms_popViewControllerAnimated:(BOOL)animated {
+    UIViewController *viewController = [self ms_popViewControllerAnimated:animated];
+    UIViewController *visibleViewController = [self visibleViewController];
+    [self setNavigationBarHidden:visibleViewController.ms_navigationBarVisibled animated:animated];
+    return viewController;
+}
 #pragma mark set get
 
 - (BOOL)fullScreenInteractivePopGestureRecognizer {
@@ -71,7 +95,12 @@
         object_setClass(self.interactivePopGestureRecognizer, [UIScreenEdgePanGestureRecognizer class]);
     }
 }
-
+- (BOOL)ms_navigationBarHidden {
+    return [objc_getAssociatedObject(self, _cmd) boolValue];
+}
+- (void)setMs_navigationBarHidden:(BOOL)ms_navigationBarHidden{
+     objc_setAssociatedObject(self, @selector(ms_navigationBarHidden), @(ms_navigationBarHidden), OBJC_ASSOCIATION_ASSIGN);
+}
 @end
 
 
@@ -86,5 +115,11 @@
 {
     objc_setAssociatedObject(self, @selector(ms_interactivePopDisabled), @(disabled), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
+- (void)setMs_navigationBarVisibled:(BOOL)ms_navigationBarVisibled {
+    objc_setAssociatedObject(self, @selector(ms_navigationBarVisibled), @(ms_navigationBarVisibled), OBJC_ASSOCIATION_ASSIGN);
+}
 
+- (BOOL)ms_navigationBarVisibled {
+    return [objc_getAssociatedObject(self, _cmd) boolValue];
+}
 @end

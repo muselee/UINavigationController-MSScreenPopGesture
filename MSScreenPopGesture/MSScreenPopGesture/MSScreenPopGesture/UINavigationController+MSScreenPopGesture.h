@@ -9,14 +9,14 @@
 #import <UIKit/UIKit.h>
 
 @interface UINavigationController (MSScreenPopGesture)
-//是否全屏返回 默认 左边缘返回
+ /** 是否全屏返回 默认 左边缘返回*/
 @property (nonatomic, assign) BOOL fullScreenInteractivePopGestureRecognizer;
 
 @end
 
 @interface UIViewController(MSScreenPopGesture)
-
-//禁用滑动返回
+ /** 禁用滑动返回*/
 @property (nonatomic, assign) BOOL ms_interactivePopDisabled;
-
+ /** 隐藏导航栏*/
+@property (nonatomic, assign) BOOL ms_navigationBarVisibled;
 @end

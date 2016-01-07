@@ -8,6 +8,7 @@
 
 #import "ViewController.h"
 #import "MSPopGestureViewController.h"
+#import "UINavigationController+MSScreenPopGesture.h"
 @interface ViewController ()
 
 @end
@@ -24,6 +25,7 @@
     MSPopGestureViewController * pop =[[MSPopGestureViewController alloc]init];
     //关闭滑动返回
 //    pop.popDisabled = YES;
+    pop.ms_navigationBarVisibled = YES;
     [self.navigationController pushViewController:pop animated:YES];
 }
 - (void)didReceiveMemoryWarning {
