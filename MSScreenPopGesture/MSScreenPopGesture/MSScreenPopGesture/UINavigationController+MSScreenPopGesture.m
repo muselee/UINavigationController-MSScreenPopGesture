@@ -13,10 +13,17 @@
 @end
 @implementation UINavigationController (MSScreenPopGesture)
 
-void (^method_swizzling)(Class , SEL , SEL ) = ^(Class class, SEL originalMethod, SEL swizzledMethod){
-    Method  method = class_getInstanceMethod(class, originalMethod);
-    Method _method = class_getInstanceMethod(class, swizzledMethod);
-    method_exchangeImplementations(method, _method);
+void (^method_swizzling)(Class , SEL , SEL ) = ^(Class class, SEL originalSelector, SEL swizzledSelector){
+    
+    Method originalMethod = class_getInstanceMethod(class, originalSelector);
+    Method swizzledMethod = class_getInstanceMethod(class, swizzledSelector);
+    
+    BOOL addSuccess = class_addMethod(class, originalSelector, method_getImplementation(swizzledMethod), method_getTypeEncoding(swizzledMethod));
+    if (addSuccess) {
+        class_replaceMethod(class, swizzledSelector, method_getImplementation(originalMethod), method_getTypeEncoding(originalMethod));
+    } else {
+        method_exchangeImplementations(originalMethod, swizzledMethod);
+    }
 };
 + (void)load {
     
@@ -28,7 +35,6 @@ void (^method_swizzling)(Class , SEL , SEL ) = ^(Class class, SEL originalMethod
         [UINavigationController gestureRecognizerShouldBeRequiredToFailByGestureRecognizer];
         //交换push 和pop 方法
         method_swizzling(self,@selector(pushViewController:animated:),@selector(ms_pushViewController:animated:));
-        //
         method_swizzling(self,@selector(popViewControllerAnimated:),@selector(ms_popViewControllerAnimated:));
         
     });
