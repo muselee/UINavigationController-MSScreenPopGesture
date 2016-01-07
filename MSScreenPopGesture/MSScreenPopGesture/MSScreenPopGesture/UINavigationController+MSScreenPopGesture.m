@@ -66,7 +66,6 @@
     if (fullScreenInteractivePopGestureRecognizer) {
         if ([self.interactivePopGestureRecognizer isMemberOfClass:[UIPanGestureRecognizer class]]) return;
         object_setClass(self.interactivePopGestureRecognizer, [UIPanGestureRecognizer class]);
-        [self.interactivePopGestureRecognizer setValue:@NO forKey:@"canPanVertically"];
     } else {
         if ([self.interactivePopGestureRecognizer isMemberOfClass:[UIScreenEdgePanGestureRecognizer class]]) return;
         object_setClass(self.interactivePopGestureRecognizer, [UIScreenEdgePanGestureRecognizer class]);
