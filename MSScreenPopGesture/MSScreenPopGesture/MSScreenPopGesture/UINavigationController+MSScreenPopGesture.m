@@ -42,7 +42,7 @@ void (^method_swizzling)(Class , SEL , SEL ) = ^(Class class, SEL originalMethod
     method_setImplementation(gestureShouldReceiveTouch, imp_implementationWithBlock(^(UIPercentDrivenInteractiveTransition *navTransition,UIGestureRecognizer *gestureRecognizer, UITouch *touch){
         UINavigationController *navigationController = (UINavigationController *)[navTransition valueForKey:@"_parent"];
         UIViewController *topViewController = navigationController.viewControllers.lastObject;
-        BOOL disabled = topViewController.ms_interactivePopDisabled;
+        BOOL disabled = topViewController.ms_screenPopDisabled;
         return navigationController.viewControllers.count != 1 &&!disabled;
     }));
 }
@@ -71,23 +71,29 @@ void (^method_swizzling)(Class , SEL , SEL ) = ^(Class class, SEL originalMethod
 - (void)ms_pushViewController:(UIViewController *)viewController animated:(BOOL)animated {
 
     [self ms_pushViewController:viewController animated:animated];
+    if (self.ms_navigationBarGlobalHidden) {
+        return;
+    }
     [self setNavigationBarHidden:viewController.ms_navigationBarHidden animated:animated];
 
 }
 -(UIViewController *)ms_popViewControllerAnimated:(BOOL)animated {
     UIViewController *viewController = [self ms_popViewControllerAnimated:animated];
+    if (self.ms_navigationBarGlobalHidden) {
+        return viewController;
+    }
     UIViewController *visibleViewController = [self visibleViewController];
     [self setNavigationBarHidden:visibleViewController.ms_navigationBarHidden animated:animated];
     return viewController;
 }
 #pragma mark set get
 
-- (BOOL)fullScreenInteractivePopGestureRecognizer {
+- (BOOL)ms_fullScreenPopEnabled {
     return [self.interactivePopGestureRecognizer isMemberOfClass:[UIPanGestureRecognizer class]];
 }
 
-- (void)setFullScreenInteractivePopGestureRecognizer:(BOOL)fullScreenInteractivePopGestureRecognizer {
-    if (fullScreenInteractivePopGestureRecognizer) {
+- (void)setMs_fullScreenPopEnabled:(BOOL)ms_fullScreenPopEnabled {
+    if (ms_fullScreenPopEnabled) {
         if ([self.interactivePopGestureRecognizer isMemberOfClass:[UIPanGestureRecognizer class]]) return;
         object_setClass(self.interactivePopGestureRecognizer, [UIPanGestureRecognizer class]);
     } else {
@@ -96,19 +102,33 @@ void (^method_swizzling)(Class , SEL , SEL ) = ^(Class class, SEL originalMethod
     }
 }
 
+- (BOOL)ms_navigationBarGlobalHidden{
+    NSNumber *number = objc_getAssociatedObject(self, _cmd);
+    if (number) {
+        return number.boolValue;
+    }
+    //默认不隐藏
+    self.ms_navigationBarGlobalHidden = NO;
+    return NO;
+}
+- (void)setMs_navigationBarGlobalHidden:(BOOL)ms_navigationBarGlobalHidden{
+    objc_setAssociatedObject(self, @selector(ms_navigationBarGlobalHidden), @(ms_navigationBarGlobalHidden), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    //设置导航栏
+    self.navigationBarHidden = ms_navigationBarGlobalHidden;
+}
 @end
 
 
 @implementation UIViewController(MSScreenPopGesture)
 
-- (BOOL)ms_interactivePopDisabled
+- (BOOL)ms_screenPopDisabled
 {
     return [objc_getAssociatedObject(self, _cmd) boolValue];
 }
 
-- (void)setMs_interactivePopDisabled:(BOOL)disabled
+- (void)setMs_screenPopDisabled:(BOOL)ms_screenPopDisabled
 {
-    objc_setAssociatedObject(self, @selector(ms_interactivePopDisabled), @(disabled), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    objc_setAssociatedObject(self, @selector(ms_screenPopDisabled), @(ms_screenPopDisabled), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 - (void)setMs_navigationBarHidden:(BOOL)ms_navigationBarHidden {
     objc_setAssociatedObject(self, @selector(ms_navigationBarHidden), @(ms_navigationBarHidden), OBJC_ASSOCIATION_ASSIGN);

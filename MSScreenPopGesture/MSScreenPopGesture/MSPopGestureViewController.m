@@ -16,7 +16,7 @@
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor redColor];
     // Do any additional setup after loading the view.
-    self.ms_interactivePopDisabled = _popDisabled;
+    self.ms_screenPopDisabled = _popDisabled;
 
 }
 

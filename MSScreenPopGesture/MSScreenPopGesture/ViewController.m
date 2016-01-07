@@ -26,7 +26,7 @@
     //关闭滑动返回
 //    pop.popDisabled = YES;
     //隐藏导航栏
-//    pop.ms_navigationBarHidden = YES;
+    pop.ms_navigationBarHidden = YES;
     [self.navigationController pushViewController:pop animated:YES];
 }
 - (void)didReceiveMemoryWarning {

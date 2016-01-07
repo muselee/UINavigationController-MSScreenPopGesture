@@ -22,7 +22,7 @@
     self.window.backgroundColor = [UIColor whiteColor];
     UINavigationController * nav = [[UINavigationController alloc]initWithRootViewController:[ViewController new]];
     //开启全屏滑动返回
-    nav.fullScreenInteractivePopGestureRecognizer = YES;
+    nav.ms_fullScreenPopEnabled = YES;
     self.window.rootViewController = nav;
     [self.window makeKeyAndVisible];
 
